@@ -975,33 +975,6 @@ button {
   </div>
   
   <script>
-	  let deferredPrompt;
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-      // ბანერის ავტომატური გამოჩენის შეჩერება
-      e.preventDefault();
-      // ივენტის შენახვა, რომ მოგვიანებით გამოვიყენოთ
-      deferredPrompt = e;
-
-      // მომხმარებლისთვის ინსტალაციის ღილაკის ჩვენება
-      const installButton = document.getElementById('install-btn');
-      installButton.style.display = 'block';
-
-      installButton.addEventListener('click', async () => {
-        if (deferredPrompt) {
-          // ინსტალაციის ბანერის ჩვენება
-          deferredPrompt.prompt();
-
-          // მომხმარებლის არჩევანის ლოგირება
-          const choiceResult = await deferredPrompt.userChoice;
-          console.log(`User choice: ${choiceResult.outcome}`);
-
-          // ივენტის გასუფთავება
-          deferredPrompt = null;
-        }
-      });
-    });
-
     // ინსტალაციის ღილაკის დამალვა, თუ აპი უკვე დაინსტალირებულია
     window.addEventListener('appinstalled', () => {
       console.log('App has been installed');
