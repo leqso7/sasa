@@ -975,22 +975,6 @@ button {
   </div>
   
   <script>
-    // ინსტალაციის ღილაკის დამალვა, თუ აპი უკვე დაინსტალირებულია
-    window.addEventListener('appinstalled', () => {
-      console.log('App has been installed');
-      const installButton = document.getElementById('install-btn');
-      installButton.style.display = 'none';
-     if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sasa/sw.js')
-                .then((registration) => {
-                    console.log('ServiceWorker registration successful');
-                })
-                .catch((err) => {
-                    console.log('ServiceWorker registration failed: ', err);
-                });
-        });
-    }
     const JSONBIN_API_KEY = '$2a$10$irNeeadxzMPL4iu242bQp..s2Ebyna0Df.f8oblrkk1UZPC2171Le';
 const JSONBIN_BIN_ID = '6710f973e41b4d34e44455fa';
 
