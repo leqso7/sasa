@@ -927,8 +927,6 @@ button {
 <button id="downloadButton" style="display:none;">ჩამოტვირთვა</button>
 <div id="timer" style="display: block;">დრო: 31523908 წამი</div>
 <div id="rgbBackground" style="display: none;"></div>
-<!-- პაროლის ფორმა -->
-
 <a id="shutdownVideo" href="https://www.facebook.com/profile.php?id=61567812722184" target="_blank" style="display: block; position: fixed; bottom: 10px; left: 10px; z-index: 10000; pointer-events: auto;">
   <div style="display: inline-block;
               width: 50px;
@@ -952,24 +950,23 @@ button {
           <input type="text" id="nameInput" placeholder="შეიყვანეთ მოსწავლის სახელი">
           <button id="addNameButton">დამატება</button>
       </div>
-      <button id="selectStudentButton">მოოსწავლის ��რჩევა</button>
+      <button id="selectStudentButton">მოოსწავლის არჩევა</button>
       <button id="pairStudentsButton" class="pairing-button">კლასების დამატება</button>
-      <div id="nameCounter">სულ სტუდენტები:</div>
+      <div id="nameCounter">მოსწავლეების რაოდენობა:</div>
       <div id="nameList" class="name-list" style="max-height: 1183px;"><div class="name">
                
             
              
           </div></div>
-      <div id="winnerDisplay" class="winner" style="display: none;">შერჩეული მოსწავლე: ნუგზარი ნუგზარი</div>
       <div id="groupsList" class="groups-list"><div class="group"></div><div class="group"></div></div>
       <div id="groupSizeOptions">
           <button id="enlargeButton" title="">გადიდება🔍</button>
-          <button onclick="askGroupChoice(2)" class="not-recommended" title="რათანბარი განაწილება">2</button>
-          <button onclick="askGroupChoice(3)" class="not-recommended" title="რათანბარი განაწილება">3</button>
-          <button onclick="askGroupChoice(4)" class="not-recommended" title="რათანბარი განაწილება">4</button>
-          <button onclick="askGroupChoice(5)" class="not-recommended" title="რათანბარი განაწილება">5</button>
-          <button onclick="askGroupChoice(6)" class="not-recommended" title="რათანბარი განაწილება">6</button>
-          <button onclick="askGroupChoice(7)" class="not-recommended" title="რათანბარი განაწილება">7</button>
+          <button onclick="askGroupChoice(2)" class="not-recommended" title="არათანბარი განაწილება">2</button>
+          <button onclick="askGroupChoice(3)" class="not-recommended" title="არათანბარი განაწილება">3</button>
+          <button onclick="askGroupChoice(4)" class="not-recommended" title="არათანბარი განაწილება">4</button>
+          <button onclick="askGroupChoice(5)" class="not-recommended" title="არათანბარი განაწილება">5</button>
+          <button onclick="askGroupChoice(6)" class="not-recommended" title="არათანბარი განაწილება">6</button>
+          <button onclick="askGroupChoice(7)" class="not-recommended" title="არათანბარი განაწილება">7</button>
       </div>
       <!-- HTML ნაწილში დავამატოთ გადიდების ღილაკი -->
   </div>
@@ -992,52 +989,6 @@ try {
   return [];
 }
 }
-
-async function updateUsedPasswords(usedPasswords) {
-try {
-  await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Master-Key': JSONBIN_API_KEY
-    },
-    body: JSON.stringify({ usedPasswords })
-  });
-} catch (error) {
-  console.error('Error updating used passwords:', error);
-}
-}
-
-async function checkPassword() {
-const passwordInput = document.getElementById('passwordInput').value;
-const usedPasswords = await getUsedPasswords();
-
-if (passwords.includes(passwordInput) && !usedPasswords.includes(passwordInput)) {
-  usedPasswords.push(passwordInput);
-  await updateUsedPasswords(usedPasswords);
-  
-  passwordForm.style.display = 'none';
-  startCountdown();
-} else if (usedPasswords.includes(passwordInput)) {
-  alert('ეს პარლი უკვე გმყენებულია. გთხოვთ, სცადოთ სხვა.');
-} else {
-  alert('არასწორი პაროლი. სცადეთ ხელახლა.');
-}
-}
-
-async function resetUsedPasswords() {
-await updateUsedPasswords([]);
-alert('ყველა პაროლი განულებულია.');
-}
-
-async function checkIfAllPasswordsUsed() {
-const usedPasswords = await getUsedPasswords();
-if (usedPasswords.length === passwords.length) {
-  alert('ყველა პაროლი გამოყენებულია. გთოოვთ, დაუკავშირდეთ ადმინისტრატორს.');
-  // აქ შეგიძლიათ დაამატოთ დამატებითი ლოგიკა, მაგლითად, სიტის დაბლოკვა
-}
-}
-
 document.addEventListener('DOMContentLoaded', function() {
   // აქ უნდა იყოს თქვენი კოდის დანარჩენი ნაწილ
 });
@@ -1094,7 +1045,7 @@ document.addEventListener('DOMContentLoaded', function() {
           `;
           nameList.appendChild(nameElement);
       });
-      nameCounter.textContent = `სულ სტუდენტები: ${students.length}`;
+      nameCounter.textContent = `მოსწავლეების რაოდენობა: ${students.length}`;
   }
 
   function deleteStudent(index) {
@@ -1154,7 +1105,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function distributeGroups(groupSize) {
       if (groupSize >= students.length) {
-          alert(`ჯგუფი ვერ შეიქმნება ${groupSize}-იანი, სტუდენტების რაოდენობა ძალიან ცოტაა.`);
+          alert(`ჯგუფი ვერ შეიქმნება ${groupSize}-იანი, მოსწავლეების რაოდენობა ძალიან ცოტაა.`);
           return;
       }
 
@@ -1201,7 +1152,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function distributeGroups(groupSize) {
   // Prevent group creation if group size equals or is greater than the number of students
   if (groupSize >= students.length) {
-      alert(`გუფი ვერ შეიქმნება ${groupSize}-იანი, სტუდენების რაოდენბა ძალიან ცოტაა.`);
+      alert(`გუფი ვერ შეიქმნება ${groupSize}-იანი, მოსწავლეების რაოდენბა ძალიან ცოტაა.`);
       return;
   }
 
@@ -1465,63 +1416,6 @@ if (!document.getElementById('timer')) {
     `;
     document.body.appendChild(timerElement);
 }
-
-function showShutdownState() {
-    if (timerInterval) {
-        clearInterval(timerInterval);
-    }
-    const timerElement = document.getElementById('timer');
-    timerElement.style.display = 'none';
-    document.body.style.backgroundColor = 'black';
-    document.getElementById('rgbBackground').style.display = 'block';
-    document.getElementById('message').style.display = 'block';
-    document.getElementById('product-content').style.display = 'none';
-    document.getElementById('passwordForm').style.display = 'block';
-    localStorage.setItem('siteStatus', 'shutdown');
-}
-
-function checkPassword() {
-const passwordInput = document.getElementById('passwordInput').value;
-if (passwordInput === 'paroliparoli') {
-  passwordForm.style.display = 'none';
-  startCountdown();
-} else {
-  alert('არასწორი პაროლი. სცადეთ ხელახლა.');
-}
-}
-
-function closePasswordForm() {
-passwordForm.style.display = 'none';
-}
-
-// მარჯვენა ღილაკის დაჭერის დამუშავება
-document.addEventListener('mousedown', function(event) {
-  if (event.button === 2) { // 2 არის მარჯვენა ღილაკის კოდი
-      event.preventDefault(); // სტანდარტული კონტექსტური მენიუს გამოჩენის პრევენცია
-      rightClickStartTime = Date.now();
-      isRightClickHeld = true;
-}
-});
-
-document.addEventListener('mouseup', function(event) {
-if (event.button === 2) {
-  isRightClickHeld = false;
-}
-});
-
-// კონტექსტური მენიუს გამოჩენის პრევენცია
-document.addEventListener('contextmenu', function(event) {
-event.preventDefault();
-});
-
-// ყოველ 100 მილიწამში ვამოწმებთ, ხომ არ გავიდა 10 წამი მარჯვენა ღილაკის დაჭერდან
-setInterval(function() {
-if (isRightClickHeld && Date.now() - rightClickStartTime >= 10000) {
-  isRightClickHeld = false;
-  // არ დაიწყოს დროის ათვლა ხელახლა, თუ პაროლი არ არს შეყვანილი
-}
-}, 100);
-
 // გვერდის ჩატვირთვისას შვამოწმოთ საიტის მდგომარეობა
 document.addEventListener('DOMContentLoaded', checkSiteStatus);
 
@@ -1567,7 +1461,6 @@ document.addEventListener('DOMContentLoaded', checkSiteStatus);
   // შევქმნათ ��ასვი ჯგუფებისთვის
   const groups = [];
 
-  // არეულად დავლაგოთ სტუდენტები
   const shuffledStudents = [...students].sort(() => 0.5 - Math.random());
 
   let currentIndex = 0;
@@ -2002,75 +1895,9 @@ function distributeGroups(groupSize) {
   }
 
 
-  // ლოკალურ მეხსიერებაში ვინახავთ გამოყენებულ პაროლებს
-  let usedPasswords = JSON.parse(localStorage.getItem('usedPasswords')) || [];
-
-  function checkPassword() {
-  const passwordInput = document.getElementById('passwordInput').value;
-
-  if (passwords.includes(passwordInput) && !usedPasswords.includes(passwordInput)) {
-    // პაროლი სწორია და ჯერ არ გამოყენებულა
-    usedPasswords.push(passwordInput);
-    localStorage.setItem('usedPasswords', JSON.stringify(usedPasswords));
-    
-    passwordForm.style.display = 'none';
-    startCountdown();
-  } else if (usedPasswords.includes(passwordInput)) {
-    alert('ეს პაროლი უკვე გამოყენებულია. გთხოვთ, სცადოთ სხვა.');
-  } else {
-    alert('არასწორი პაროლი. სცადეთ ხელახლა.');
-  }
-  }
-
-  // ფუნქცია ყველა გამოყენებული აროლის გასაწმენდდ (ადინისტრატორისთვის)
-  function resetUsedPasswords() {
-  usedPasswords = [];
-  localStorage.setItem('usedPasswords', JSON.stringify(usedPasswords));
-  alert('ყველა პაროი განულებულია.');
-  }
-
-  // ეს ფუნქცია შე��იძლიათ გამოიძახოთ საიტის გადატვირთვისას ან ახალი სესიის დაწყებისას
-  function checkIfAllPasswordsUsed() {
-  if (usedPasswords.length === passwords.length) {
-    alert('ყველა პაროლი გამოყნებულა. გთხოვთ, დაუკავშირდეთ ადმინისტრატორს.');
-    // ა შეგიძლიათ დაამატოთ დამატებითი ლოგიკა, მაგალითად, სიტის დაბლოკვა
-  }
-  }// ფუნქცია ვებსაიტის ჩამოსატვითად
-  function downloadWebsite() {
-    // მთლიანი HTML-ის მიღება
-    const fullHTML = document.documentElement.outerHTML;
-    
-    // Blob ობიექტის შექმნა HTML შიგთავსით
-    const blob = new Blob([fullHTML], {type: 'text/html'});
-    
-    // URL-ის შექმნა Blob-იდან
-    const url = URL.createObjectURL(blob);
-    
-    // ჩამოსატვირთი ბმულის შექმნა
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'website.html';
-    
-    // ბმულის ამალვა და დაკლიკვა
-    document.body.appendChild(a);
-    a.style.display = 'none';
-    a.click();
-    
-    // ბმულის წაშლა და URL-ის გასუფთავება
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
-
-  // მოდიფიცირებული addStudent ფუნქცია
-  function addStudent() {
-    const name = nameInput.value.trim();
-
-    if (name === 'ჩამოტვირთვა') {
-        downloadWebsite();
-        nameInput.value = '';
-        return;
-    }
-
+  
+  
+  
     // დანარჩენი კოდი უცვლელია...
 
     if (name === 'iii123') {
@@ -2114,7 +1941,7 @@ function distributeGroups(groupSize) {
     updateNameList();
     updatePairButtonState();
     updateButtonHighlighting();
-  }
+  
   document.addEventListener('DOMContentLoaded', function() {
   const element = document.getElementById('uuidMachine');
   if (element) {
@@ -2180,7 +2007,7 @@ function distributeGroups(groupSize) {
         if (templateName && names.length > 0) {
             templates[templateName] = names;
             localStorage.setItem('templates', JSON.stringify(templates));
-            alert(`შაბლონი "${templateName}" დამატებულ���ა ${names.length} მოსწავლით`);
+            alert(`შაბლონი "${templateName}" დამატებულია ${names.length} მოსწავლით`);
             document.body.removeChild(dialog);
         } else {
             alert('გთხოვთ, შეავსოთ კლასის სახელი და დაამატოთ მინიმუმ ერთი მოსწავლით');
@@ -2273,44 +2100,6 @@ function distributeGroups(groupSize) {
 
   // ჩამოტვირთვის ღილაკის ფუნქციონალის დამატება
   document.getElementById('downloadButton').addEventListener('click', downloadSite);
-
-  // ... (დანარჩენი JavaScript კოდი) ...
- // გლობალური ცვლადები პაროლის მართვისთვის
-let oneTimePassword = null;
-let isPasswordUsed = false;
-
-function showShutdownState() { 
- timerElement.style.display = 'none'; 
- document.body.style.backgroundColor = 'black'; 
- rgbBackground.style.display = 'block'; 
- messageElement.style.display = 'block'; 
- productContent.style.display = 'none'; 
- passwordForm.style.display = 'block'; // გამოჩნდეს პაროლის ფორმა 
- 
- 
- 
- 
- // ვიდეო გაწვდოს
- const shutdownVideo = document.getElementById('shutdownVideo');
- shutdownVideo.style.display = 'block'; // ვიდეო გამოჩნდეს
- 
- localStorage.setItem('siteStatus', 'shutdown'); 
-}
-
-async function checkPassword() { 
- const passwordInput = document.getElementById('passwordInput').value; 
- if (passwordInput === 'paroliparoli') { 
-     passwordForm.style.display = 'none'; 
-     startCountdown(); 
-
-     // ვიდეო გაქრეს
-     const shutdownVideo = document.getElementById('shutdownVideo');
-     shutdownVideo.style.display = 'none'; // ვიდეო გაქრეს
- } else { 
-     alert('არ��სორი პაროლი. სცადეთ ხელახლა.'); 
- } 
-}
-
 // შევამოწმოთ ავს თუ არ წვდომა
 if (!localStorage.getItem('accessApproved')) {
     // თუ რ აქვს წვდომა, გადავამისამართოთ request.html-ზე
@@ -2331,62 +2120,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (nameList) {
         nameList.style.webkitOverflowScrolling = 'touch';
     }
-    
- 
 });
 
-// ვაუმჯობესებთ გახმოვანების ფუნქციას
-async function speakGeorgian(text) {
-    try {
-        // ვამოწმებთ აუდიო კონტექსტის მხარდაჭრას
-        if (!'AudioContext' in window && !'webkitAudioContext' in window) {
-            throw new Error('Audio not supported');
-        }
-        
-        const token = await getAzureToken();
-        if (!token) return;
-
-        // ვამატებთ ლოადინგ ინდიკატორს
-        const loadingIndicator = document.createElement('div');
-        loadingIndicator.className = 'loading-indicator';
-        document.body.appendChild(loadingIndicator);
-
-        const url = `https://${AZURE_CONFIG.region}.tts.speech.microsoft.com/cognitiveservices/v1`;
-        const ssml = `
-            <speak version='1.0' xml:lang='ka-GE'>
-                <voice xml:lang='ka-GE' xml:gender='Female' name='ka-GE-EkaNeural'>
-                    <prosody rate="1.1" pitch="+0%">${text}</prosody>
-                </voice>
-            </speak>`;
-
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/ssml+xml',
-                'X-Microsoft-OutputFormat': 'audio-16khz-64kbitrate-mono-mp3' // შემცირებული ბიტრიტი მობილურებისთვის
-            },
-            body: ssml
-        });
-
-        if (!response.ok) throw new Error('Speech synthesis failed');
-
-        const blob = await response.blob();
-        const audio = new Audio(URL.createObjectURL(blob));
-        
-        // ვამატებთ აუდიოს დასრულების ჰენდლერს
-        audio.onended = () => {
-            URL.revokeObjectURL(audio.src); // ვათაისუფლებთ მეხსიერებას
-            loadingIndicator.remove();
-        };
-
-        await audio.play();
-
-    } catch (error) {
-        console.error('Error with text-to-speech:', error);
-        alert('გახმოვანების შეცდომ. სცადეთ თავიდან.');
-    }
-}
 
 // დავამატოთ მობილუი ��პტიმიზაციის JavaScript კოდი
 
@@ -2614,14 +2349,12 @@ function createGroupsByStudentCount(studentsPerGroup) {
     // გამოვთვალოთ მინიმალური რაოდენობა თითო ჯგუფში
     const minStudentsPerGroup = Math.floor(totalStudents / numberOfGroups);
     
-    // გამოვთვალოთ რამდენ ჯგუფს დასჭირდება დამატებითი სტუდენტი
     const extraStudents = totalStudents % numberOfGroups;
     
     // შევქმნათ ჯგუფების მასივი
     const groups = [];
     let currentIndex = 0;
     
-    // დავარანდომოთ სტუდენტების მასივი
     const shuffledStudents = [...students].sort(() => Math.random() - 0.5);
     
     // შევქმნათ ჯგუფები
@@ -2645,13 +2378,11 @@ function displayGroups(groups) {
 }
 
 function createGroupsByGroupCount(numberOfGroups) {
-    // შევამოწმოთ არის თუ არა საკმარისი სტუდენტები (მინიმუმ 2 სტუდენტი თითო ჯგფში)
     if (students.length < numberOfGroups * 2) {
         alert(`ჯგუფები ვერ გაკეთდება. ${numberOfGroups} ჯგუფისთვის საჭიროა მინიმუმ ${numberOfGroups * 2} მოსწავლე (თითო ჯგუფში მინიმუმ 2 მოსწავლე)`);
         return;
     }
     
-    // დავარანდომოთ სტუდენტების მასივი
     const shuffledStudents = [...students].sort(() => Math.random() - 0.5);
     
     // გამოვთვალოთ მინიმალური და მაქსიმალური რაოდენობა ჯგუფში
@@ -2669,7 +2400,6 @@ function createGroupsByGroupCount(numberOfGroups) {
         currentIndex += minStudentsPerGroup;
     }
     
-    // დარჩენილი სტუდენტები გავანაწილოთ თანაბრად
     for (let i = 0; i < remainingStudents; i++) {
         groups[i].push(shuffledStudents[currentIndex + i]);
     }
@@ -2778,7 +2508,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 
   // ნოთიფიკაციის ჩვენება
   const addShortcutButton = document.createElement('button');
-  addShortcutButton.textContent = 'გსურთ საიტის shortcut დამატება?';
+  addShortcutButton.textContent = 'გსურთ საიტის dextop დამატება?💻';
   addShortcutButton.style.position = 'fixed';
   addShortcutButton.style.bottom = '60px';
   addShortcutButton.style.right = '1px';
