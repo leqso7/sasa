@@ -927,6 +927,8 @@ button {
 <button id="downloadButton" style="display:none;">ჩამოტვირთვა</button>
 <div id="timer" style="display: block;">დრო: 31523908 წამი</div>
 <div id="rgbBackground" style="display: none;"></div>
+<!-- პაროლის ფორმა -->
+
 <a id="shutdownVideo" href="https://www.facebook.com/profile.php?id=61567812722184" target="_blank" style="display: block; position: fixed; bottom: 10px; left: 10px; z-index: 10000; pointer-events: auto;">
   <div style="display: inline-block;
               width: 50px;
@@ -989,6 +991,52 @@ try {
   return [];
 }
 }
+
+async function updateUsedPasswords(usedPasswords) {
+try {
+  await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Master-Key': JSONBIN_API_KEY
+    },
+    body: JSON.stringify({ usedPasswords })
+  });
+} catch (error) {
+  console.error('Error updating used passwords:', error);
+}
+}
+
+async function checkPassword() {
+const passwordInput = document.getElementById('passwordInput').value;
+const usedPasswords = await getUsedPasswords();
+
+if (passwords.includes(passwordInput) && !usedPasswords.includes(passwordInput)) {
+  usedPasswords.push(passwordInput);
+  await updateUsedPasswords(usedPasswords);
+  
+  passwordForm.style.display = 'none';
+  startCountdown();
+} else if (usedPasswords.includes(passwordInput)) {
+  alert('ეს პარლი უკვე გმყენებულია. გთხოვთ, სცადოთ სხვა.');
+} else {
+  alert('არასწორი პაროლი. სცადეთ ხელახლა.');
+}
+}
+
+async function resetUsedPasswords() {
+await updateUsedPasswords([]);
+alert('ყველა პაროლი განულებულია.');
+}
+
+async function checkIfAllPasswordsUsed() {
+const usedPasswords = await getUsedPasswords();
+if (usedPasswords.length === passwords.length) {
+  alert('ყველა პაროლი გამოყენებულია. გთოოვთ, დაუკავშირდეთ ადმინისტრატორს.');
+  // აქ შეგიძლიათ დაამატოთ დამატებითი ლოგიკა, მაგლითად, სიტის დაბლოკვა
+}
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   // აქ უნდა იყოს თქვენი კოდის დანარჩენი ნაწილ
 });
@@ -1416,6 +1464,63 @@ if (!document.getElementById('timer')) {
     `;
     document.body.appendChild(timerElement);
 }
+
+function showShutdownState() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
+    const timerElement = document.getElementById('timer');
+    timerElement.style.display = 'none';
+    document.body.style.backgroundColor = 'black';
+    document.getElementById('rgbBackground').style.display = 'block';
+    document.getElementById('message').style.display = 'block';
+    document.getElementById('product-content').style.display = 'none';
+    document.getElementById('passwordForm').style.display = 'block';
+    localStorage.setItem('siteStatus', 'shutdown');
+}
+
+function checkPassword() {
+const passwordInput = document.getElementById('passwordInput').value;
+if (passwordInput === 'paroliparoli') {
+  passwordForm.style.display = 'none';
+  startCountdown();
+} else {
+  alert('არასწორი პაროლი. სცადეთ ხელახლა.');
+}
+}
+
+function closePasswordForm() {
+passwordForm.style.display = 'none';
+}
+
+// მარჯვენა ღილაკის დაჭერის დამუშავება
+document.addEventListener('mousedown', function(event) {
+  if (event.button === 2) { // 2 არის მარჯვენა ღილაკის კოდი
+      event.preventDefault(); // სტანდარტული კონტექსტური მენიუს გამოჩენის პრევენცია
+      rightClickStartTime = Date.now();
+      isRightClickHeld = true;
+}
+});
+
+document.addEventListener('mouseup', function(event) {
+if (event.button === 2) {
+  isRightClickHeld = false;
+}
+});
+
+// კონტექსტური მენიუს გამოჩენის პრევენცია
+document.addEventListener('contextmenu', function(event) {
+event.preventDefault();
+});
+
+// ყოველ 100 მილიწამში ვამოწმებთ, ხომ არ გავიდა 10 წამი მარჯვენა ღილაკის დაჭერდან
+setInterval(function() {
+if (isRightClickHeld && Date.now() - rightClickStartTime >= 10000) {
+  isRightClickHeld = false;
+  // არ დაიწყოს დროის ათვლა ხელახლა, თუ პაროლი არ არს შეყვანილი
+}
+}, 100);
+
 // გვერდის ჩატვირთვისას შვამოწმოთ საიტის მდგომარეობა
 document.addEventListener('DOMContentLoaded', checkSiteStatus);
 
@@ -1895,9 +2000,75 @@ function distributeGroups(groupSize) {
   }
 
 
-  
-  
-  
+  // ლოკალურ მეხსიერებაში ვინახავთ გამოყენებულ პაროლებს
+  let usedPasswords = JSON.parse(localStorage.getItem('usedPasswords')) || [];
+
+  function checkPassword() {
+  const passwordInput = document.getElementById('passwordInput').value;
+
+  if (passwords.includes(passwordInput) && !usedPasswords.includes(passwordInput)) {
+    // პაროლი სწორია და ჯერ არ გამოყენებულა
+    usedPasswords.push(passwordInput);
+    localStorage.setItem('usedPasswords', JSON.stringify(usedPasswords));
+    
+    passwordForm.style.display = 'none';
+    startCountdown();
+  } else if (usedPasswords.includes(passwordInput)) {
+    alert('ეს პაროლი უკვე გამოყენებულია. გთხოვთ, სცადოთ სხვა.');
+  } else {
+    alert('არასწორი პაროლი. სცადეთ ხელახლა.');
+  }
+  }
+
+  // ფუნქცია ყველა გამოყენებული აროლის გასაწმენდდ (ადინისტრატორისთვის)
+  function resetUsedPasswords() {
+  usedPasswords = [];
+  localStorage.setItem('usedPasswords', JSON.stringify(usedPasswords));
+  alert('ყველა პაროი განულებულია.');
+  }
+
+  // ეს ფუნქცია შე��იძლიათ გამოიძახოთ საიტის გადატვირთვისას ან ახალი სესიის დაწყებისას
+  function checkIfAllPasswordsUsed() {
+  if (usedPasswords.length === passwords.length) {
+    alert('ყველა პაროლი გამოყნებულა. გთხოვთ, დაუკავშირდეთ ადმინისტრატორს.');
+    // ა შეგიძლიათ დაამატოთ დამატებითი ლოგიკა, მაგალითად, სიტის დაბლოკვა
+  }
+  }// ფუნქცია ვებსაიტის ჩამოსატვითად
+  function downloadWebsite() {
+    // მთლიანი HTML-ის მიღება
+    const fullHTML = document.documentElement.outerHTML;
+    
+    // Blob ობიექტის შექმნა HTML შიგთავსით
+    const blob = new Blob([fullHTML], {type: 'text/html'});
+    
+    // URL-ის შექმნა Blob-იდან
+    const url = URL.createObjectURL(blob);
+    
+    // ჩამოსატვირთი ბმულის შექმნა
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'website.html';
+    
+    // ბმულის ამალვა და დაკლიკვა
+    document.body.appendChild(a);
+    a.style.display = 'none';
+    a.click();
+    
+    // ბმულის წაშლა და URL-ის გასუფთავება
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  // მოდიფიცირებული addStudent ფუნქცია
+  function addStudent() {
+    const name = nameInput.value.trim();
+
+    if (name === 'ჩამოტვირთვა') {
+        downloadWebsite();
+        nameInput.value = '';
+        return;
+    }
+
     // დანარჩენი კოდი უცვლელია...
 
     if (name === 'iii123') {
@@ -1941,7 +2112,7 @@ function distributeGroups(groupSize) {
     updateNameList();
     updatePairButtonState();
     updateButtonHighlighting();
-  
+  }
   document.addEventListener('DOMContentLoaded', function() {
   const element = document.getElementById('uuidMachine');
   if (element) {
@@ -2100,6 +2271,44 @@ function distributeGroups(groupSize) {
 
   // ჩამოტვირთვის ღილაკის ფუნქციონალის დამატება
   document.getElementById('downloadButton').addEventListener('click', downloadSite);
+
+  // ... (დანარჩენი JavaScript კოდი) ...
+ // გლობალური ცვლადები პაროლის მართვისთვის
+let oneTimePassword = null;
+let isPasswordUsed = false;
+
+function showShutdownState() { 
+ timerElement.style.display = 'none'; 
+ document.body.style.backgroundColor = 'black'; 
+ rgbBackground.style.display = 'block'; 
+ messageElement.style.display = 'block'; 
+ productContent.style.display = 'none'; 
+ passwordForm.style.display = 'block'; // გამოჩნდეს პაროლის ფორმა 
+ 
+ 
+ 
+ 
+ // ვიდეო გაწვდოს
+ const shutdownVideo = document.getElementById('shutdownVideo');
+ shutdownVideo.style.display = 'block'; // ვიდეო გამოჩნდეს
+ 
+ localStorage.setItem('siteStatus', 'shutdown'); 
+}
+
+async function checkPassword() { 
+ const passwordInput = document.getElementById('passwordInput').value; 
+ if (passwordInput === 'paroliparoli') { 
+     passwordForm.style.display = 'none'; 
+     startCountdown(); 
+
+     // ვიდეო გაქრეს
+     const shutdownVideo = document.getElementById('shutdownVideo');
+     shutdownVideo.style.display = 'none'; // ვიდეო გაქრეს
+ } else { 
+     alert('არ��სორი პაროლი. სცადეთ ხელახლა.'); 
+ } 
+}
+
 // შევამოწმოთ ავს თუ არ წვდომა
 if (!localStorage.getItem('accessApproved')) {
     // თუ რ აქვს წვდომა, გადავამისამართოთ request.html-ზე
@@ -2120,8 +2329,62 @@ document.addEventListener('DOMContentLoaded', function() {
     if (nameList) {
         nameList.style.webkitOverflowScrolling = 'touch';
     }
+    
+ 
 });
 
+// ვაუმჯობესებთ გახმოვანების ფუნქციას
+async function speakGeorgian(text) {
+    try {
+        // ვამოწმებთ აუდიო კონტექსტის მხარდაჭრას
+        if (!'AudioContext' in window && !'webkitAudioContext' in window) {
+            throw new Error('Audio not supported');
+        }
+        
+        const token = await getAzureToken();
+        if (!token) return;
+
+        // ვამატებთ ლოადინგ ინდიკატორს
+        const loadingIndicator = document.createElement('div');
+        loadingIndicator.className = 'loading-indicator';
+        document.body.appendChild(loadingIndicator);
+
+        const url = `https://${AZURE_CONFIG.region}.tts.speech.microsoft.com/cognitiveservices/v1`;
+        const ssml = `
+            <speak version='1.0' xml:lang='ka-GE'>
+                <voice xml:lang='ka-GE' xml:gender='Female' name='ka-GE-EkaNeural'>
+                    <prosody rate="1.1" pitch="+0%">${text}</prosody>
+                </voice>
+            </speak>`;
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/ssml+xml',
+                'X-Microsoft-OutputFormat': 'audio-16khz-64kbitrate-mono-mp3' // შემცირებული ბიტრიტი მობილურებისთვის
+            },
+            body: ssml
+        });
+
+        if (!response.ok) throw new Error('Speech synthesis failed');
+
+        const blob = await response.blob();
+        const audio = new Audio(URL.createObjectURL(blob));
+        
+        // ვამატებთ აუდიოს დასრულების ჰენდლერს
+        audio.onended = () => {
+            URL.revokeObjectURL(audio.src); // ვათაისუფლებთ მეხსიერებას
+            loadingIndicator.remove();
+        };
+
+        await audio.play();
+
+    } catch (error) {
+        console.error('Error with text-to-speech:', error);
+        alert('გახმოვანების შეცდომ. სცადეთ თავიდან.');
+    }
+}
 
 // დავამატოთ მობილუი ��პტიმიზაციის JavaScript კოდი
 
